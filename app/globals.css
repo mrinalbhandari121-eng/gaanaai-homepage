@@ -310,7 +310,8 @@
     .hamb{display:flex}
     .tagline{padding:22px var(--pad)}
     .tagline .t{font-size:clamp(17px,5vw,22px);white-space:normal;line-height:1.25}
-    .hero-media{height:64vh;min-height:440px}
+    .hero-media{height:auto;min-height:0;aspect-ratio:1080/498}
+    .hero-media video{object-fit:cover}
     .hero-media h1{font-size:clamp(30px,8vw,42px)}
     h2.display{font-size:clamp(26px,7vw,38px)}
     .band{padding:clamp(56px,9vh,84px) 0}
