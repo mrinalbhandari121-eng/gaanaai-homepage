@@ -278,11 +278,13 @@ const HTML = `<!-- NAV -->
 export default function Home() {
   useEffect(() => {
     
-  // pause videos when off-screen for performance
-  const vio=new IntersectionObserver(es=>es.forEach(e=>{
-    if(e.isIntersecting){e.target.play().catch(()=>{});}else{e.target.pause();}
-  }),{threshold:.15});
-  document.querySelectorAll('video').forEach(v=>vio.observe(v));
+  // autoplay-in-view (mobile-safe): force muted+playsinline as properties, retry on load, touch fallback
+  var vids=document.querySelectorAll('video');
+  function kick(v){try{v.muted=true;v.defaultMuted=true;v.playsInline=true;var p=v.play();if(p&&p.catch)p.catch(function(){});}catch(e){}}
+  vids.forEach(function(v){v.muted=true;v.defaultMuted=true;v.playsInline=true;v.setAttribute('muted','');v.setAttribute('playsinline','');v.addEventListener('loadeddata',function(){kick(v);});v.addEventListener('canplay',function(){kick(v);});});
+  var vio=new IntersectionObserver(function(es){es.forEach(function(e){var v=e.target;if(e.isIntersecting){kick(v);}else{v.pause();}});},{threshold:.1});
+  vids.forEach(function(v){vio.observe(v);});
+  document.addEventListener('touchstart',function once(){vids.forEach(function(v){var r=v.getBoundingClientRect();if(r.top<innerHeight&&r.bottom>0)kick(v);});},{passive:true,once:true});
 
   // scroll reveal — pop / slide elements in as they enter view
   var revSel='.tagline .t,.trusted,.band .label,.band h2.display,.band .lede,.feature .inner,.actions,.cols3>*,.better>*,.brandgrid>*,.tiles>*,.ba .media';
